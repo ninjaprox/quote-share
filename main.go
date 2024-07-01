@@ -3,12 +3,14 @@ package main
 import (
 	"fmt"
 	"image"
+	"image/draw"
 	"image/jpeg"
 	"image/png"
 	"net/http"
 	"os"
 	"strings"
 
+	"github.com/disintegration/imaging"
 	"github.com/fogleman/gg"
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font/gofont/gobold"
@@ -71,18 +73,35 @@ func saveImage(img image.Image, outputPath string) error {
 func overlayTextOnImage(img image.Image, text string, fontSize float64, hexColor string) (image.Image, error) {
 	dc := gg.NewContextForImage(img)
 
-	dc.SetHexColor(hexColor)
-
 	// Load font face with specified size
 	font, _ := truetype.Parse(gobold.TTF)
 	face := truetype.NewFace(font, &truetype.Options{Size: fontSize})
 	dc.SetFontFace(face)
 
 	// Calculate text position
+	textWidth, textHeight := dc.MeasureString(text)
 	x := float64(dc.Width()) / 2
 	y := float64(dc.Height()) / 2
 
+	// Create a blurred rectangle behind the text
+	rectWidth := textWidth + 20
+	rectHeight := textHeight + 20
+	rectX := x - textWidth/2 - 10
+	rectY := y - textHeight/2 - 10
+
+	// Draw the blurred rectangle
+	blurImg := imaging.Blur(img, 10)
+	blurLayer := image.NewRGBA(image.Rect(0, 0, dc.Width(), dc.Height()))
+	draw.Draw(blurLayer, blurLayer.Bounds(), blurImg, image.Point{}, draw.Src)
+	draw.Draw(dc.Image().(*image.RGBA), image.Rect(int(rectX), int(rectY), int(rectX+rectWidth), int(rectY+rectHeight)), blurLayer, image.Point{int(rectX), int(rectY)}, draw.Over)
+
+	// Set transparency for the rectangle
+	dc.SetRGBA(0, 0, 0, 0.5)
+	dc.DrawRectangle(rectX, rectY, rectWidth, rectHeight)
+	dc.Fill()
+
 	// Draw text centered on the image
+	dc.SetHexColor(hexColor)
 	dc.DrawStringAnchored(text, x, y, 0.5, 0.5)
 
 	return dc.Image(), nil
