@@ -79,15 +79,14 @@ func overlayTextOnImage(img image.Image, text string, fontSize float64, hexColor
 	dc.SetFontFace(face)
 
 	// Calculate text position
-	textWidth, textHeight := dc.MeasureString(text)
 	x := float64(dc.Width()) / 2
 	y := float64(dc.Height()) / 2
 
 	// Create a blurred rectangle behind the text
-	rectWidth := textWidth + 20
-	rectHeight := textHeight + 20
-	rectX := x - textWidth/2 - 10
-	rectY := y - textHeight/2 - 10
+	rectWidth := float64(dc.Width())
+	rectHeight := float64(dc.Height())
+	rectX := float64(0)
+	rectY := float64(0)
 
 	// Draw the blurred rectangle
 	blurImg := imaging.Blur(img, 10)
@@ -112,7 +111,7 @@ func main() {
 	imageSource := "https://images.unsplash.com/photo-1719670046288-f03275608b76?q=80&w=2487&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" // or "path/to/your/image.jpg"
 	text := "Your overlay text here"
 	fontSize := 189.0
-	hexColor := "#7B0323" // Example hex color code
+	hexColor := "#FFFFFF" // Example hex color code
 	outputPath := "output.jpg"
 
 	var img image.Image
