@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"image"
 	"image/draw"
-	"strings"
+	"net/url"
 
 	"github.com/disintegration/imaging"
 	"github.com/fogleman/gg"
@@ -57,10 +57,10 @@ func Generate(text, imageSource string) (image.Image, error) {
 	var err error
 
 	// Load image from either URL or file system
-	if strings.HasPrefix(imageSource, "http://") || strings.HasPrefix(imageSource, "https://") {
+	if imageURL, e := url.Parse(imageSource); e == nil && (imageURL.Scheme == "http" || imageURL.Scheme == "https") {
 		img, err = loadImageFromURL(imageSource)
 	} else {
-		img, err = loadImageFromFile(imageSource)
+		err = fmt.Errorf("invalid image URL")
 	}
 
 	if err != nil {
