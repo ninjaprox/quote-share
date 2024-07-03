@@ -23,5 +23,8 @@ WORKDIR /root/
 # Copy the binary from the builder stage
 COPY --from=builder /app/main .
 
+# Copy fonts from the builder stage
+COPY fonts fonts
+
 # Run the binary
 CMD ["./main"]
