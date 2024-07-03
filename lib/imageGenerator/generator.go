@@ -5,11 +5,11 @@ import (
 	"image"
 	"image/draw"
 	"net/url"
+	"os"
 
 	"github.com/disintegration/imaging"
 	"github.com/fogleman/gg"
 	"github.com/golang/freetype/truetype"
-	"golang.org/x/image/font/gofont/gobold"
 )
 
 // overlayTextOnImage overlays text on an image with specified font size and text color.
@@ -17,7 +17,8 @@ func overlayTextOnImage(img image.Image, text string, fontSize float64, hexColor
 	dc := gg.NewContextForImage(img)
 
 	// Load font face with specified size
-	font, _ := truetype.Parse(gobold.TTF)
+	fontBytes, _ := os.ReadFile("fonts/Arsenal/Arsenal-Bold.ttf")
+	font, _ := truetype.Parse(fontBytes)
 	face := truetype.NewFace(font, &truetype.Options{Size: fontSize})
 	dc.SetFontFace(face)
 
