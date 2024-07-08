@@ -1,9 +1,11 @@
+import debounce from 'lodash/debounce'
 class SelectionPopup {
     constructor(options = {}) {
         this.options = {
             buttonTexts: ['Button 1', 'Button 2', 'Button 3'],
             buttonCallbacks: [() => { }, () => { }, () => { }],
             popupClass: 'selection-popup',
+            debounceTime: 500, // Debounce time in milliseconds
             ...options
         };
         this.popup = null;
@@ -12,6 +14,10 @@ class SelectionPopup {
 
     init() {
         this.createPopup();
+        this.debouncedShowPopup = debounce(
+            this.showPopup.bind(this),
+            this.options.debounceTime
+        );
         document.addEventListener('selectionchange', () => this.handleSelectionChange());
     }
 
@@ -38,7 +44,7 @@ class SelectionPopup {
     handleSelectionChange() {
         const selection = window.getSelection();
         if (selection.toString().trim().length > 0) {
-            this.showPopup(selection);
+            this.debouncedShowPopup(selection);
         } else {
             this.hidePopup();
         }
