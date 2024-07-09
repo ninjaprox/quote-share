@@ -32,3 +32,5 @@ const popup = new SelectionPopup({
   ],
   popupClass: 'my-custom-popup-class'
 });
+
+popup.init()

@@ -1,4 +1,6 @@
-import debounce from 'lodash/debounce'
+import debounce from 'lodash/debounce';
+import { createApp, ref } from 'vue'
+import SelectionPopupUI from './SelectionPopupUI.vue'
 class SelectionPopup {
     constructor(options = {}) {
         this.options = {
@@ -8,8 +10,14 @@ class SelectionPopup {
             debounceTime: 500, // Debounce time in milliseconds
             ...options
         };
-        this.popup = null;
-        this.init();
+        this.isVisible = ref(false)
+        this.popupStyle = {
+            position: 'absolute',
+            zIndex: '1000',
+            left: '0px',
+            top: '0px',
+        }
+        this.vueApp = null
     }
 
     init() {
@@ -22,23 +30,15 @@ class SelectionPopup {
     }
 
     createPopup() {
-        this.popup = document.createElement('div');
-        this.popup.className = this.options.popupClass;
-        this.popup.style.display = 'none';
-        this.popup.style.position = 'absolute';
-        this.popup.style.zIndex = '1000';
+        const popupContainer = document.createElement('div')
 
-        this.options.buttonTexts.forEach((text, index) => {
-            const button = document.createElement('button');
-            button.textContent = text;
-            button.addEventListener('click', () => {
-                this.options.buttonCallbacks[index]();
-                this.hidePopup();
-            });
-            this.popup.appendChild(button);
-        });
-
-        document.body.appendChild(this.popup);
+        document.body.appendChild(popupContainer)
+        this.vueApp = createApp(SelectionPopupUI, {
+            visible: this.isVisible,
+            popupStyle: this.popupStyle,
+            onClickHandler: () => console.log('hello')
+        })
+        this.vueApp.mount(popupContainer)
     }
 
     handleSelectionChange() {
@@ -51,16 +51,16 @@ class SelectionPopup {
     }
 
     showPopup(selection) {
-        const range = selection.getRangeAt(0);
-        const rect = range.getBoundingClientRect();
+        const range = selection.getRangeAt(0)
+        const rect = range.getBoundingClientRect()
 
-        this.popup.style.left = `${rect.left + window.scrollX}px`;
-        this.popup.style.top = `${rect.bottom + window.scrollY}px`;
-        this.popup.style.display = 'block';
+        this.popupStyle.left = `${rect.left + window.scrollX}px`
+        this.popupStyle.top = `${rect.bottom + window.scrollY}px`
+        this.isVisible.value = true
     }
 
     hidePopup() {
-        this.popup.style.display = 'none';
+        this.isVisible.value = false
     }
 }
 
