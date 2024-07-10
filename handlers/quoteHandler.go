@@ -19,7 +19,8 @@ func HandleQuote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resultImg, err := imageGenerator.Generate(text, imageSource)
+	width, height := 1200, 1200
+	resultImg, err := imageGenerator.Generate(text, imageSource, width, height)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error overlaying text: %v", err), http.StatusInternalServerError)
 		return

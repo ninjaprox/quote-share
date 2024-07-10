@@ -12,9 +12,19 @@ import (
 	"github.com/golang/freetype/truetype"
 )
 
+func resizeAndCropImage(img image.Image, width, height int) image.Image {
+	// Resize the image to cover the target size while maintaining aspect ratio
+	resized := imaging.Fill(img, width, height, imaging.Center, imaging.Lanczos)
+	return resized
+}
+
 // overlayTextOnImage overlays text on an image with specified font size and text color.
 func overlayTextOnImage(img image.Image, text string, fontSize float64, hexColor string) (image.Image, error) {
-	dc := gg.NewContextForImage(img)
+	bounds := img.Bounds()
+	dc := gg.NewContext(bounds.Max.X, bounds.Max.Y)
+
+	// Draw the resized image onto the context
+	dc.DrawImage(img, 0, 0)
 
 	// Load font face with specified size
 	fontBytes, _ := os.ReadFile("fonts/Arsenal/Arsenal-Bold.ttf")
@@ -50,7 +60,7 @@ func overlayTextOnImage(img image.Image, text string, fontSize float64, hexColor
 	return dc.Image(), nil
 }
 
-func Generate(text, imageSource string) (image.Image, error) {
+func Generate(text, imageSource string, width, height int) (image.Image, error) {
 	fontSize := 24.0
 	hexColor := "#FFFFFF"
 
@@ -67,6 +77,9 @@ func Generate(text, imageSource string) (image.Image, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error loading image: %v", err)
 	}
+
+	// Resize and crop the image to the specified dimensions
+	img = resizeAndCropImage(img, width, height)
 
 	// Overlay text on the image
 	return overlayTextOnImage(img, text, fontSize, hexColor)
