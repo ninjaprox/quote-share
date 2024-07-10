@@ -45,13 +45,13 @@ func overlayTextOnImage(img image.Image, text string, fontSize float64, hexColor
 
 	// Draw text centered on the image
 	dc.SetHexColor(hexColor)
-	dc.DrawStringAnchored(text, x, y, 0.5, 0.5)
+	dc.DrawStringWrapped(text, x, y, 0.5, 0.5, float64(dc.Width())*0.9, 1.5, gg.AlignCenter)
 
 	return dc.Image(), nil
 }
 
 func Generate(text, imageSource string) (image.Image, error) {
-	fontSize := 180.0
+	fontSize := 24.0
 	hexColor := "#FFFFFF"
 
 	var img image.Image
