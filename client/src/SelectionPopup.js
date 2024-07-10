@@ -11,6 +11,7 @@ class SelectionPopup {
             ...options
         };
         this.isVisible = ref(false)
+        this.quoteText = ref('')
         this.popupStyle = {
             position: 'absolute',
             zIndex: '1000',
@@ -34,6 +35,7 @@ class SelectionPopup {
 
         document.body.appendChild(popupContainer)
         this.vueApp = createApp(SelectionPopupUI, {
+            quoteText: this.quoteText,
             visible: this.isVisible,
             popupStyle: this.popupStyle,
             onClickHandler: () => console.log('hello')
@@ -56,6 +58,7 @@ class SelectionPopup {
 
         this.popupStyle.left = `${rect.left + window.scrollX}px`
         this.popupStyle.top = `${rect.bottom + window.scrollY}px`
+        this.quoteText.value = selection.toString().trim()
         this.isVisible.value = true
     }
 
