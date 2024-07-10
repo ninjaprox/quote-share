@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image"
 	"image/draw"
+	"math"
 	"net/url"
 	"os"
 
@@ -18,17 +19,47 @@ func resizeAndCropImage(img image.Image, width, height int) image.Image {
 	return resized
 }
 
+func calculateFontSize(text string, width, height int, font *truetype.Font) float64 {
+	// Calculate the desired text area (30% of the image area)
+	imageArea := float64(width * height)
+	desiredTextArea := imageArea * 0.3
+
+	// Calculate initial font size (this is a starting point, we'll adjust it)
+	fontSize := math.Sqrt(desiredTextArea / float64(len(text)))
+
+	// Adjust font size to fit 30% of the image area
+	for {
+		face := truetype.NewFace(font, &truetype.Options{Size: fontSize})
+		dc := gg.NewContext(width, height)
+		dc.SetFontFace(face)
+
+		// Measure text dimensions
+		textWidth, textHeight := dc.MeasureMultilineString(text, 1.5)
+		textArea := textWidth * textHeight
+
+		if textArea <= desiredTextArea {
+			break
+		}
+
+		fontSize *= 0.9 // Reduce font size and try again
+	}
+
+	// clamp fontSize within 30 to 100 range
+	return math.Max(30, math.Min(100, fontSize))
+}
+
 // overlayTextOnImage overlays text on an image with specified font size and text color.
-func overlayTextOnImage(img image.Image, text string, fontSize float64, hexColor string) (image.Image, error) {
+func overlayTextOnImage(img image.Image, text string, hexColor string) (image.Image, error) {
 	bounds := img.Bounds()
 	dc := gg.NewContext(bounds.Max.X, bounds.Max.Y)
 
 	// Draw the resized image onto the context
 	dc.DrawImage(img, 0, 0)
 
-	// Load font face with specified size
+	// Load font face with dynamic size
 	fontBytes, _ := os.ReadFile("fonts/Arsenal/Arsenal-Bold.ttf")
 	font, _ := truetype.Parse(fontBytes)
+	fontSize := calculateFontSize(text, dc.Width(), dc.Height(), font)
 	face := truetype.NewFace(font, &truetype.Options{Size: fontSize})
 	dc.SetFontFace(face)
 
@@ -61,7 +92,6 @@ func overlayTextOnImage(img image.Image, text string, fontSize float64, hexColor
 }
 
 func Generate(text, imageSource string, width, height int) (image.Image, error) {
-	fontSize := 24.0
 	hexColor := "#FFFFFF"
 
 	var img image.Image
@@ -82,5 +112,5 @@ func Generate(text, imageSource string, width, height int) (image.Image, error) 
 	img = resizeAndCropImage(img, width, height)
 
 	// Overlay text on the image
-	return overlayTextOnImage(img, text, fontSize, hexColor)
+	return overlayTextOnImage(img, text, hexColor)
 }
