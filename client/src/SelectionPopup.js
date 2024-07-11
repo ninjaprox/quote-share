@@ -1,6 +1,6 @@
 import debounce from 'lodash/debounce';
 import { createApp, ref } from 'vue'
-import SelectionPopupUI from './SelectionPopupUI.vue'
+import SharePopover from './SharePopover.vue'
 class SelectionPopup {
     constructor(options = {}) {
         this.options = {
@@ -9,13 +9,13 @@ class SelectionPopup {
         };
         this.imageSrc = ref('')
         this.quoteText = ref('')
-        this.isVisible = ref(false)
-        this.popupStyle = {
+        this.isOpen = ref(false)
+        this.popupStyle = ref({
             position: 'absolute',
             zIndex: '1000',
             left: '0px',
             top: '0px',
-        }
+        })
         this.vueApp = null
     }
 
@@ -32,10 +32,10 @@ class SelectionPopup {
         const popupContainer = document.createElement('div')
 
         document.body.appendChild(popupContainer)
-        this.vueApp = createApp(SelectionPopupUI, {
+        this.vueApp = createApp(SharePopover, {
+            open: this.isOpen,
             imageSrc: this.imageSrc,
             quoteText: this.quoteText,
-            visible: this.isVisible,
             popupStyle: this.popupStyle,
         })
         this.vueApp.mount(popupContainer)
@@ -56,15 +56,18 @@ class SelectionPopup {
         const range = selection.getRangeAt(0)
         const rect = range.getBoundingClientRect()
 
-        this.popupStyle.left = `${rect.left + window.scrollX}px`
-        this.popupStyle.top = `${rect.bottom + window.scrollY}px`
+        this.popupStyle.value = {
+            ...this.popupStyle.value,
+            left: `${rect.left + window.scrollX}px`,
+            top: `${rect.bottom + window.scrollY}px`
+        }
         this.imageSrc.value = imageSrc
         this.quoteText.value = selection.toString().trim()
-        this.isVisible.value = true
+        this.isOpen.value = true
     }
 
     hidePopup() {
-        this.isVisible.value = false
+        this.isOpen.value = false
     }
 }
 
