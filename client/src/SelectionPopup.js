@@ -4,14 +4,12 @@ import SelectionPopupUI from './SelectionPopupUI.vue'
 class SelectionPopup {
     constructor(options = {}) {
         this.options = {
-            buttonTexts: ['Button 1', 'Button 2', 'Button 3'],
-            buttonCallbacks: [() => { }, () => { }, () => { }],
-            popupClass: 'selection-popup',
-            debounceTime: 500, // Debounce time in milliseconds
+            debounceTime: 500,
             ...options
         };
-        this.isVisible = ref(false)
+        this.imageSrc = ref('')
         this.quoteText = ref('')
+        this.isVisible = ref(false)
         this.popupStyle = {
             position: 'absolute',
             zIndex: '1000',
@@ -35,16 +33,17 @@ class SelectionPopup {
 
         document.body.appendChild(popupContainer)
         this.vueApp = createApp(SelectionPopupUI, {
+            imageSrc: this.imageSrc,
             quoteText: this.quoteText,
             visible: this.isVisible,
             popupStyle: this.popupStyle,
-            onClickHandler: () => console.log('hello')
         })
         this.vueApp.mount(popupContainer)
     }
 
     handleSelectionChange() {
         const selection = window.getSelection();
+
         if (selection.toString().trim().length > 0) {
             this.debouncedShowPopup(selection);
         } else {
@@ -53,11 +52,13 @@ class SelectionPopup {
     }
 
     showPopup(selection) {
+        const imageSrc = document.querySelector(this.options.imageSelector)?.src
         const range = selection.getRangeAt(0)
         const rect = range.getBoundingClientRect()
 
         this.popupStyle.left = `${rect.left + window.scrollX}px`
         this.popupStyle.top = `${rect.bottom + window.scrollY}px`
+        this.imageSrc.value = imageSrc
         this.quoteText.value = selection.toString().trim()
         this.isVisible.value = true
     }

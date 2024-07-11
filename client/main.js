@@ -24,13 +24,7 @@ import SelectionPopup from './src/SelectionPopup.js'
 
 // setupCounter(document.querySelector('#counter'))
 const popup = new SelectionPopup({
-  buttonTexts: ['Copy', 'Share', 'Highlight'],
-  buttonCallbacks: [
-    () => { /* Copy functionality */ },
-    () => { /* Share functionality */ },
-    () => { /* Highlight functionality */ }
-  ],
-  popupClass: 'my-custom-popup-class'
+  imageSelector: 'img.cover-image',
 });
 
 popup.init()
