@@ -10,11 +10,12 @@ class SelectionPopup {
         this.imageSrc = ref('')
         this.quoteText = ref('')
         this.isOpen = ref(false)
-        this.popupStyle = ref({
+        this.popoverStyle = ref({
             position: 'absolute',
             zIndex: '1000',
             left: '0px',
             top: '0px',
+            display: 'none',
         })
         this.vueApp = null
     }
@@ -36,7 +37,7 @@ class SelectionPopup {
             open: this.isOpen,
             imageSrc: this.imageSrc,
             quoteText: this.quoteText,
-            popupStyle: this.popupStyle,
+            popoverStyle: this.popoverStyle,
         })
         this.vueApp.mount(popupContainer)
     }
@@ -56,10 +57,11 @@ class SelectionPopup {
         const range = selection.getRangeAt(0)
         const rect = range.getBoundingClientRect()
 
-        this.popupStyle.value = {
-            ...this.popupStyle.value,
+        this.popoverStyle.value = {
+            ...this.popoverStyle.value,
             left: `${rect.left + window.scrollX}px`,
-            top: `${rect.bottom + window.scrollY}px`
+            top: `${rect.bottom + window.scrollY}px`,
+            display: 'block',
         }
         this.imageSrc.value = imageSrc
         this.quoteText.value = selection.toString().trim()
@@ -67,6 +69,10 @@ class SelectionPopup {
     }
 
     hidePopup() {
+        this.popoverStyle.value = {
+            ...this.popoverStyle.value,
+            display: 'none',
+        }
         this.isOpen.value = false
     }
 }
