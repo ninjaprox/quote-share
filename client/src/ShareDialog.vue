@@ -1,5 +1,4 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from "vue";
 import {
   DialogClose,
   DialogContent,
@@ -10,7 +9,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "radix-vue";
+import { computed } from "vue";
 
+// eslint-disable-next-line vue/require-prop-types
 const props = defineProps(["open", "image", "quote", "triggerStyle"]);
 
 const imageSrc = computed(() => {
