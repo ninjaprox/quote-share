@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from "vue";
 import ShareDialog from "./ShareDialog.vue";
 
 // eslint-disable-next-line vue/require-prop-types
@@ -8,10 +7,5 @@ const { open = false, imageSrc, quoteText, popoverStyle } = props;
 </script>
 
 <template>
-  <ShareDialog
-    :open
-    :image="imageSrc"
-    :quote="quoteText"
-    :trigger-style="popoverStyle"
-  />
+  <ShareDialog :open :image="imageSrc" :quote="quoteText" :trigger-style="popoverStyle" />
 </template>

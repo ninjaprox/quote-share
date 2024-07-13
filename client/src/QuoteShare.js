@@ -1,7 +1,8 @@
 import debounce from 'lodash/debounce';
-import { createApp, ref } from 'vue'
-import SharePopover from './SharePopover.vue'
-class SelectionPopup {
+import { createApp, ref } from 'vue';
+import SharePopover from './SharePopover.vue';
+
+class QuoteShare {
     constructor(options = {}) {
         this.options = {
             debounceTime: 500,
@@ -79,11 +80,11 @@ class SelectionPopup {
 
 // Export the library
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = SelectionPopup;
+    module.exports = QuoteShare;
 } else if (typeof exports !== 'undefined') {
-    exports.default = SelectionPopup;
+    exports.default = QuoteShare;
 } else {
-    window.SelectionPopup = SelectionPopup;
+    window.QuoteShare = QuoteShare;
 }
 
-export default SelectionPopup;
+export default QuoteShare;
