@@ -13,6 +13,7 @@ func HandleQuote(w http.ResponseWriter, r *http.Request) {
 	// Get the text and image parameters from the request
 	text := r.URL.Query().Get("text")
 	imageSource := r.URL.Query().Get("image")
+	download := r.URL.Query().Get("download")
 
 	if text == "" || imageSource == "" {
 		http.Error(w, "Missing text or image parameter", http.StatusBadRequest)
@@ -28,6 +29,9 @@ func HandleQuote(w http.ResponseWriter, r *http.Request) {
 
 	// Set the Content-Type header to image/jpeg
 	w.Header().Set("Content-Type", "image/jpeg")
+	if download == "true" {
+		w.Header().Set("Content-Disposition", "attachment; filename=\"quote-share.jpg\"")
+	}
 
 	// Encode and write the image to the response
 	if err := jpeg.Encode(w, resultImg, &jpeg.Options{Quality: 95}); err != nil {
