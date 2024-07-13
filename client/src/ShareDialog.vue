@@ -42,7 +42,13 @@ const imageSrc = computed(() => {
         <DialogTitle class="text-mauve12 m-0 text-[17px] font-semibold"
           >Share quote</DialogTitle
         >
-        <img :src="imageSrc" alt="" class="w-full h-auto my-2.5" />
+        <img
+          :src="imageSrc"
+          alt=""
+          class="w-full h-auto my-2.5"
+          width="1000px"
+          height="1000px"
+        />
         <DialogClose
           class="text-grass11 hover:bg-green4 focus:shadow-green7 absolute top-[10px] right-[10px] inline-flex h-[25px] w-[25px] appearance-none items-center justify-center rounded-full focus:shadow-[0_0_0_2px] focus:outline-none"
           aria-label="Close"
