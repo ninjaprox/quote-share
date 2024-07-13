@@ -14,9 +14,11 @@ import { computed } from "vue";
 // eslint-disable-next-line vue/require-prop-types
 const props = defineProps(["open", "image", "quote", "triggerStyle"]);
 
+const imageURL = import.meta.env.DEV
+  ? new URL("/v1/quote", "http://localhost:8080")
+  : new URL("/v1/quote", "https://quote.vinhis.me");
 const imageSrc = computed(() => {
   const { image, quote } = props;
-  const imageURL = new URL("http://localhost:8080/v1/quote");
 
   imageURL.searchParams.set("text", quote);
   imageURL.searchParams.set("image", image);
@@ -25,7 +27,6 @@ const imageSrc = computed(() => {
 });
 const downloadHref = computed(() => {
   const { image, quote } = props;
-  const imageURL = new URL("http://localhost:8080/v1/quote");
 
   imageURL.searchParams.set("text", quote);
   imageURL.searchParams.set("image", image);
