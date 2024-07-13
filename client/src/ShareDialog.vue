@@ -1,13 +1,13 @@
 <script setup>
+import { Icon } from '@iconify/vue';
 import {
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogOverlay,
   DialogPortal,
   DialogRoot,
   DialogTitle,
-  DialogTrigger,
+  DialogTrigger
 } from "radix-vue";
 import { computed } from "vue";
 
@@ -27,43 +27,22 @@ const imageSrc = computed(() => {
 
 <template>
   <DialogRoot>
-    <DialogTrigger :style="triggerStyle">Share</DialogTrigger>
+    <DialogTrigger class="border p-1 px-2 bg-white rounded text-grass11 border-grass11" :style="triggerStyle">Share
+    </DialogTrigger>
     <DialogPortal>
-      <DialogOverlay class="overlay" />
-      <DialogContent class="dialog-content">
-        <DialogTitle>Share quote</DialogTitle>
-        <DialogDescription>Description</DialogDescription>
-        <img :src="imageSrc" alt="" class="quote-image" />
-        <blockquote>
-          {{ quote }}
-        </blockquote>
-        <DialogClose>Close</DialogClose>
+      <DialogOverlay class="bg-blackA9 data-[state=open]:animate-overlayShow fixed inset-0 z-30" />
+      <DialogContent
+        class="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-white p-[25px] shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none z-[100]">
+        <DialogTitle class="text-mauve12 m-0 text-[17px] font-semibold">Share quote</DialogTitle>
+        <img :src="imageSrc" alt="" class="w-full h-auto my-2.5" />
+        <DialogClose
+          class="text-grass11 hover:bg-green4 focus:shadow-green7 absolute top-[10px] right-[10px] inline-flex h-[25px] w-[25px] appearance-none items-center justify-center rounded-full focus:shadow-[0_0_0_2px] focus:outline-none"
+          aria-label="Close">
+          <Icon icon="lucide:x" />
+        </DialogClose>
       </DialogContent>
     </DialogPortal>
   </DialogRoot>
 </template>
 
-<style scoped>
-.dialog-content {
-  position: fixed;
-  top: 0;
-  left: 0;
-  /* background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow-y: auto; */
-
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  max-width: 50%;
-  max-height: 90%;
-  overflow-y: auto;
-}
-
-.quote-image {
-  width: 100%;
-  height: auto;
-}
-</style>
+<style scoped></style>
