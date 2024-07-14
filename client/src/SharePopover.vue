@@ -1,4 +1,6 @@
 <script setup>
+import "./style.css";
+
 import ShareDialog from "./ShareDialog.vue";
 
 // eslint-disable-next-line vue/require-prop-types
