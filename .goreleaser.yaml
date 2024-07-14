@@ -16,18 +16,18 @@ builds:
       - arm
       - arm64
     goarm:
-      - '7'
+      - "7"
     goos:
       - linux
       - darwin
 
 dockers:
   - image_templates:
-    - ghcr.io/ninjaprox/quote-share:{{ .Tag }}-arm64
+      - ghcr.io/ninjaprox/quote-share:{{ .Tag }}-arm64
     use: buildx
     build_flag_templates:
-    - --pull
-    - --platform=linux/arm64
+      - --pull
+      - --platform=linux/arm64
     goarch: arm64
     extra_files:
       - fonts/Arsenal/Arsenal-Bold.ttf
@@ -54,11 +54,11 @@ dockers:
       - fonts/Be_Vietnam_Pro/BeVietnamPro-Thin.ttf
       - fonts/Be_Vietnam_Pro/BeVietnamPro-ThinItalic.ttf
   - image_templates:
-    - ghcr.io/ninjaprox/quote-share:{{ .Tag }}-armv7
+      - ghcr.io/ninjaprox/quote-share:{{ .Tag }}-armv7
     use: buildx
     build_flag_templates:
-    - --pull
-    - --platform=linux/arm/v7
+      - --pull
+      - --platform=linux/arm/v7
     goarch: arm
     goarm: 7
     extra_files:
@@ -87,10 +87,10 @@ dockers:
       - fonts/Be_Vietnam_Pro/BeVietnamPro-ThinItalic.ttf
 
 docker_manifests:
-- name_template: ghcr.io/ninjaprox/quote-share:{{ .Tag }}
-  image_templates:
-  - ghcr.io/ninjaprox/quote-share:{{ .Tag }}-arm64
-  - ghcr.io/ninjaprox/quote-share:{{ .Tag }}-armv7
+  - name_template: ghcr.io/ninjaprox/quote-share:{{ .Tag }}
+    image_templates:
+      - ghcr.io/ninjaprox/quote-share:{{ .Tag }}-arm64
+      - ghcr.io/ninjaprox/quote-share:{{ .Tag }}-armv7
 
 changelog:
   disable: true
@@ -99,3 +99,8 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+
+release:
+  extra_files:
+    - glob: client/quote-share.tar.gz
+      name_template: "{{ .ProjectName }}-v{{ .Version }}.tar.gz"
