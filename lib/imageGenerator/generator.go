@@ -1,4 +1,4 @@
-package imageGenerator
+package main
 
 import (
 	_ "embed"
@@ -115,4 +115,8 @@ func Generate(text, imageSource string, width, height int) (image.Image, error) 
 
 	// Overlay text on the image
 	return overlayTextOnImage(img, text, hexColor)
+}
+
+func main() {
+
 }

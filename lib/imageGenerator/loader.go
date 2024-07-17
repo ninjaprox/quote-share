@@ -1,4 +1,4 @@
-package imageGenerator
+package main
 
 import (
 	"image"
