@@ -1,12 +1,12 @@
 package imageGenerator
 
 import (
+	_ "embed"
 	"fmt"
 	"image"
 	"image/draw"
 	"math"
 	"net/url"
-	"os"
 
 	"github.com/disintegration/imaging"
 	"github.com/fogleman/gg"
@@ -48,6 +48,9 @@ func calculateFontSize(text string, width, height int, font *truetype.Font) floa
 	return math.Max(30, math.Min(100, fontSize))
 }
 
+//go:embed fonts/Arsenal/Arsenal-Bold.ttf
+var fontBytes []byte
+
 // overlayTextOnImage overlays text on an image with specified font size and text color.
 func overlayTextOnImage(img image.Image, text string, hexColor string) (image.Image, error) {
 	bounds := img.Bounds()
@@ -57,7 +60,6 @@ func overlayTextOnImage(img image.Image, text string, hexColor string) (image.Im
 	dc.DrawImage(img, 0, 0)
 
 	// Load font face with dynamic size
-	fontBytes, _ := os.ReadFile("fonts/Arsenal/Arsenal-Bold.ttf")
 	font, _ := truetype.Parse(fontBytes)
 	fontSize := calculateFontSize(text, dc.Width(), dc.Height(), font)
 	face := truetype.NewFace(font, &truetype.Options{Size: fontSize})
