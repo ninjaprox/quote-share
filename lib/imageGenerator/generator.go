@@ -48,69 +48,71 @@ func calculateFontSize(text string, width, height int, font *truetype.Font) floa
 	return math.Max(30, math.Min(100, fontSize))
 }
 
-// overlayTextOnImage overlays text on an image with specified font size and text color.
-func overlayTextOnImage(img image.Image, text string, hexColor string) (image.Image, error) {
-	bounds := img.Bounds()
-	dc := gg.NewContext(bounds.Max.X, bounds.Max.Y)
+func drawColorBackground(ctx *gg.Context, color string) {
+	ctx.SetHexColor(color)
+	ctx.DrawRectangle(0, 0, float64(ctx.Width()), float64(ctx.Height()))
+	ctx.Fill()
+}
 
-	// Draw the resized image onto the context
-	dc.DrawImage(img, 0, 0)
+func drawImageBackground(ctx *gg.Context, img image.Image) {
+	// Draw the blurred image
+	blurImg := imaging.Blur(img, 10)
+	blurLayer := image.NewRGBA(image.Rect(0, 0, ctx.Width(), ctx.Height()))
+	draw.Draw(blurLayer, blurLayer.Bounds(), blurImg, image.Point{}, draw.Src)
+	draw.Draw(ctx.Image().(*image.RGBA), image.Rect(0, 0, ctx.Width(), ctx.Height()), blurLayer, image.Point{0, 0}, draw.Over)
 
+	// Draw the dark overlay for readability
+	ctx.SetRGBA(0, 0, 0, 0.5)
+	ctx.DrawRectangle(0, 0, float64(ctx.Width()), float64(ctx.Height()))
+	ctx.Fill()
+}
+
+func drawText(ctx *gg.Context, text string, color string) {
 	// Load font face with dynamic size
 	fontBytes, _ := os.ReadFile("fonts/Arsenal/Arsenal-Bold.ttf")
 	font, _ := truetype.Parse(fontBytes)
-	fontSize := calculateFontSize(text, dc.Width(), dc.Height(), font)
+	fontSize := calculateFontSize(text, ctx.Width(), ctx.Height(), font)
 	face := truetype.NewFace(font, &truetype.Options{Size: fontSize})
-	dc.SetFontFace(face)
+	ctx.SetFontFace(face)
 
 	// Calculate text position
-	x := float64(dc.Width()) / 2
-	y := float64(dc.Height()) / 2
-
-	// Create a blurred rectangle behind the text
-	rectWidth := float64(dc.Width())
-	rectHeight := float64(dc.Height())
-	rectX := float64(0)
-	rectY := float64(0)
-
-	// Draw the blurred rectangle
-	blurImg := imaging.Blur(img, 10)
-	blurLayer := image.NewRGBA(image.Rect(0, 0, dc.Width(), dc.Height()))
-	draw.Draw(blurLayer, blurLayer.Bounds(), blurImg, image.Point{}, draw.Src)
-	draw.Draw(dc.Image().(*image.RGBA), image.Rect(int(rectX), int(rectY), int(rectX+rectWidth), int(rectY+rectHeight)), blurLayer, image.Point{int(rectX), int(rectY)}, draw.Over)
-
-	// Set transparency for the rectangle
-	dc.SetRGBA(0, 0, 0, 0.5)
-	dc.DrawRectangle(rectX, rectY, rectWidth, rectHeight)
-	dc.Fill()
+	x := float64(ctx.Width()) / 2
+	y := float64(ctx.Height()) / 2
 
 	// Draw text centered on the image
-	dc.SetHexColor(hexColor)
-	dc.DrawStringWrapped(text, x, y, 0.5, 0.5, float64(dc.Width())*0.9, 1.5, gg.AlignCenter)
-
-	return dc.Image(), nil
+	ctx.SetHexColor(color)
+	ctx.DrawStringWrapped(text, x, y, 0.5, 0.5, float64(ctx.Width())*0.9, 1.5, gg.AlignCenter)
 }
 
-func Generate(text, imageSource string, width, height int) (image.Image, error) {
-	hexColor := "#FFFFFF"
+func Generate(text, background string, width, height int) (image.Image, error) {
+	textColor := "#FFFFFF"
+	backgroundColor := ""
 
 	var img image.Image
-	var err error
 
-	// Load image from either URL or file system
-	if imageURL, e := url.Parse(imageSource); e == nil && (imageURL.Scheme == "http" || imageURL.Scheme == "https") {
-		img, err = loadImageFromURL(imageSource)
+	if background == "red" {
+		backgroundColor = "#CC0000"
+	} else if background == "white" {
+		textColor = "#000000"
+		backgroundColor = "#FFFFFF"
+	} else if imageURL, err := url.Parse(background); err == nil && (imageURL.Scheme == "http" || imageURL.Scheme == "https") {
+		img, err = loadImageFromURL(background)
+		if err != nil {
+			return nil, fmt.Errorf("failed to load image")
+		}
 	} else {
-		err = fmt.Errorf("invalid image URL")
+		return nil, fmt.Errorf("invalid image URL")
 	}
 
-	if err != nil {
-		return nil, fmt.Errorf("error loading image: %v", err)
+	ctx := gg.NewContext(width, height)
+	if backgroundColor != "" {
+		drawColorBackground(ctx, backgroundColor)
 	}
+	if img != nil {
+		img = resizeAndCropImage(img, width, height)
+		drawImageBackground(ctx, img)
+	}
+	drawText(ctx, text, textColor)
 
-	// Resize and crop the image to the specified dimensions
-	img = resizeAndCropImage(img, width, height)
-
-	// Overlay text on the image
-	return overlayTextOnImage(img, text, hexColor)
+	return ctx.Image(), nil
 }
