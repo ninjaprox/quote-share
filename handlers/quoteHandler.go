@@ -14,13 +14,18 @@ func HandleQuote(w http.ResponseWriter, r *http.Request) {
 	text := r.URL.Query().Get("text")
 	imageSource := r.URL.Query().Get("image")
 	download := r.URL.Query().Get("download")
+	size := r.URL.Query().Get("size")
 
 	if text == "" || imageSource == "" {
 		http.Error(w, "Missing text or image parameter", http.StatusBadRequest)
 		return
 	}
 
-	width, height := 1200, 1200
+	width, height := 1080, 1080
+	if size == "portrait" {
+		height = 1350
+	}
+
 	resultImg, err := imageGenerator.Generate(text, imageSource, width, height)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error overlaying text: %v", err), http.StatusInternalServerError)
