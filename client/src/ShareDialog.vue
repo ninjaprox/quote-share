@@ -8,30 +8,40 @@ import {
   DialogRoot,
   DialogTitle,
   DialogTrigger,
+  RadioGroupIndicator,
+  RadioGroupItem,
+  RadioGroupRoot,
 } from "radix-vue";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 // eslint-disable-next-line vue/require-prop-types
 const props = defineProps(["open", "image", "quote", "triggerStyle"]);
+const background = ref("image");
 
 const baseURL = import.meta.env.DEV
   ? new URL("/v1/quote", "http://localhost:8080")
   : new URL("/v1/quote", "https://quote.vinhis.me");
+
+const imageParam = computed(() => {
+  const { image } = props;
+
+  return background.value === "image" ? image : background.value;
+});
 const imageSrc = computed(() => {
-  const { image, quote } = props;
+  const { quote } = props;
   const imageURL = new URL(baseURL);
 
   imageURL.searchParams.set("text", quote);
-  imageURL.searchParams.set("image", image);
+  imageURL.searchParams.set("image", imageParam.value);
 
   return imageURL.href;
 });
 const downloadHref = computed(() => {
-  const { image, quote } = props;
+  const { quote } = props;
   const downloadURL = new URL(baseURL);
 
   downloadURL.searchParams.set("text", quote);
-  downloadURL.searchParams.set("image", image);
+  downloadURL.searchParams.set("image", imageParam.value);
   downloadURL.searchParams.set("download", "true");
 
   return downloadURL.href;
@@ -60,16 +70,68 @@ const downloadHref = computed(() => {
             <img
               :src="imageSrc"
               alt="quote image"
-              class="w-full h-auto my-2.5"
+              class="w-full h-auto my-2.5 drop-shadow rounded border"
               width="1000px"
               height="1000px"
             />
           </a>
           <Icon
             icon="lucide:download"
-            class="w-8 h-8 absolute bottom-0 right-0 text-white m-2 hidden group-hover:block"
+            class="w-8 h-8 absolute bottom-0 right-0 m-2 hidden group-hover:block"
+            :class="[background === 'white' ? 'text-black' : 'text-white']"
           />
         </div>
+        Background
+        <RadioGroupRoot
+          v-model="background"
+          class="flex flex-row gap-2.5"
+          default-value="image"
+          aria-label="Background"
+          orientation="horizontal"
+        >
+          <div class="flex items-center">
+            <RadioGroupItem
+              id="r1"
+              class="bg-white w-[25px] h-[25px] rounded-full shadow-[0_2px_10px] shadow-blackA7 hover:bg-green3 focus:shadow-[0_0_0_2px] focus:shadow-black outline-none cursor-default"
+              value="image"
+            >
+              <RadioGroupIndicator
+                class="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-[11px] after:h-[11px] after:rounded-[50%] after:bg-grass11"
+              />
+            </RadioGroupItem>
+            <label class="text-[15px] leading-none pl-[15px]" for="r1">
+              Image
+            </label>
+          </div>
+          <div class="flex items-center">
+            <RadioGroupItem
+              id="r2"
+              class="bg-white w-[25px] h-[25px] rounded-full shadow-[0_2px_10px] shadow-blackA7 hover:bg-green3 focus:shadow-[0_0_0_2px] focus:shadow-black outline-none cursor-default"
+              value="red"
+            >
+              <RadioGroupIndicator
+                class="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-[11px] after:h-[11px] after:rounded-[50%] after:bg-grass11"
+              />
+            </RadioGroupItem>
+            <label class="text-[15px] leading-none pl-[15px]" for="r2">
+              Red
+            </label>
+          </div>
+          <div class="flex items-center">
+            <RadioGroupItem
+              id="r3"
+              class="bg-white w-[25px] h-[25px] rounded-full shadow-[0_2px_10px] shadow-blackA7 hover:bg-green3 focus:shadow-[0_0_0_2px] focus:shadow-black outline-none cursor-default"
+              value="white"
+            >
+              <RadioGroupIndicator
+                class="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-[11px] after:h-[11px] after:rounded-[50%] after:bg-grass11"
+              />
+            </RadioGroupItem>
+            <label class="text-[15px] leading-none pl-[15px]" for="r3">
+              White
+            </label>
+          </div>
+        </RadioGroupRoot>
         <DialogClose
           class="text-grass11 hover:bg-green4 focus:shadow-green7 absolute top-[10px] right-[10px] inline-flex h-[25px] w-[25px] appearance-none items-center justify-center rounded-full focus:shadow-[0_0_0_2px] focus:outline-none"
           aria-label="Close"
