@@ -13,6 +13,7 @@ import {
   RadioGroupRoot,
 } from "radix-vue";
 import { computed, ref } from "vue";
+import ImageWithLoader from "./ImageWithLoader.vue";
 
 // eslint-disable-next-line vue/require-prop-types
 const props = defineProps(["open", "image", "quote", "triggerStyle"]);
@@ -73,13 +74,7 @@ const downloadHref = computed(() => {
         >
         <div class="relative group mb-4">
           <a :href="downloadHref" download>
-            <img
-              :src="imageSrc"
-              alt="quote image"
-              class="w-full h-auto my-2.5 drop-shadow rounded border"
-              width="1000px"
-              height="1000px"
-            />
+            <image-with-loader :src="imageSrc" :size="size" />
           </a>
           <Icon
             icon="lucide:download"
