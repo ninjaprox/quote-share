@@ -17,6 +17,7 @@ import { computed, ref } from "vue";
 // eslint-disable-next-line vue/require-prop-types
 const props = defineProps(["open", "image", "quote", "triggerStyle"]);
 const background = ref("image");
+const size = ref("square");
 
 const baseURL = import.meta.env.DEV
   ? new URL("/v1/quote", "http://localhost:8080")
@@ -27,12 +28,16 @@ const imageParam = computed(() => {
 
   return background.value === "image" ? image : background.value;
 });
+const sizeParam = computed(() =>
+  size.value === "rectangle" ? "portrait" : "square"
+);
 const imageSrc = computed(() => {
   const { quote } = props;
   const imageURL = new URL(baseURL);
 
   imageURL.searchParams.set("text", quote);
   imageURL.searchParams.set("image", imageParam.value);
+  imageURL.searchParams.set("size", sizeParam.value);
 
   return imageURL.href;
 });
@@ -42,6 +47,7 @@ const downloadHref = computed(() => {
 
   downloadURL.searchParams.set("text", quote);
   downloadURL.searchParams.set("image", imageParam.value);
+  downloadURL.searchParams.set("size", sizeParam.value);
   downloadURL.searchParams.set("download", "true");
 
   return downloadURL.href;
@@ -91,7 +97,7 @@ const downloadHref = computed(() => {
         >
           <div class="flex items-center">
             <RadioGroupItem
-              id="r1"
+              id="background-image"
               class="bg-white w-[25px] h-[25px] rounded-full shadow-[0_2px_10px] shadow-blackA7 hover:bg-green3 focus:shadow-[0_0_0_2px] focus:shadow-black outline-none cursor-default"
               value="image"
             >
@@ -99,13 +105,16 @@ const downloadHref = computed(() => {
                 class="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-[11px] after:h-[11px] after:rounded-[50%] after:bg-grass11"
               />
             </RadioGroupItem>
-            <label class="text-[15px] leading-none pl-[15px]" for="r1">
+            <label
+              class="text-[15px] leading-none pl-[15px]"
+              for="background-image"
+            >
               Image
             </label>
           </div>
           <div class="flex items-center">
             <RadioGroupItem
-              id="r2"
+              id="background-red"
               class="bg-white w-[25px] h-[25px] rounded-full shadow-[0_2px_10px] shadow-blackA7 hover:bg-green3 focus:shadow-[0_0_0_2px] focus:shadow-black outline-none cursor-default"
               value="red"
             >
@@ -113,13 +122,16 @@ const downloadHref = computed(() => {
                 class="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-[11px] after:h-[11px] after:rounded-[50%] after:bg-grass11"
               />
             </RadioGroupItem>
-            <label class="text-[15px] leading-none pl-[15px]" for="r2">
+            <label
+              class="text-[15px] leading-none pl-[15px]"
+              for="background-red"
+            >
               Red
             </label>
           </div>
           <div class="flex items-center">
             <RadioGroupItem
-              id="r3"
+              id="background-white"
               class="bg-white w-[25px] h-[25px] rounded-full shadow-[0_2px_10px] shadow-blackA7 hover:bg-green3 focus:shadow-[0_0_0_2px] focus:shadow-black outline-none cursor-default"
               value="white"
             >
@@ -127,8 +139,51 @@ const downloadHref = computed(() => {
                 class="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-[11px] after:h-[11px] after:rounded-[50%] after:bg-grass11"
               />
             </RadioGroupItem>
-            <label class="text-[15px] leading-none pl-[15px]" for="r3">
+            <label
+              class="text-[15px] leading-none pl-[15px]"
+              for="background-white"
+            >
               White
+            </label>
+          </div>
+        </RadioGroupRoot>
+        Aspect radio
+        <RadioGroupRoot
+          v-model="size"
+          class="flex flex-row gap-2.5"
+          default-value="image"
+          aria-label="Aspect ratio"
+          orientation="horizontal"
+        >
+          <div class="flex items-center">
+            <RadioGroupItem
+              id="size-square"
+              class="bg-white w-[25px] h-[25px] rounded-full shadow-[0_2px_10px] shadow-blackA7 hover:bg-green3 focus:shadow-[0_0_0_2px] focus:shadow-black outline-none cursor-default"
+              value="square"
+            >
+              <RadioGroupIndicator
+                class="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-[11px] after:h-[11px] after:rounded-[50%] after:bg-grass11"
+              />
+            </RadioGroupItem>
+            <label class="text-[15px] leading-none pl-[15px]" for="size-square">
+              Square
+            </label>
+          </div>
+          <div class="flex items-center">
+            <RadioGroupItem
+              id="size-rectangle"
+              class="bg-white w-[25px] h-[25px] rounded-full shadow-[0_2px_10px] shadow-blackA7 hover:bg-green3 focus:shadow-[0_0_0_2px] focus:shadow-black outline-none cursor-default"
+              value="rectangle"
+            >
+              <RadioGroupIndicator
+                class="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-[11px] after:h-[11px] after:rounded-[50%] after:bg-grass11"
+              />
+            </RadioGroupItem>
+            <label
+              class="text-[15px] leading-none pl-[15px]"
+              for="size-rectangle"
+            >
+              Rectangle
             </label>
           </div>
         </RadioGroupRoot>
